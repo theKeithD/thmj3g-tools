@@ -32,6 +32,7 @@ Unpacker utility for games created using the [AIMS 2D game engine](http://aims.d
 
 - `-b` will decrypt files using non-chaining Blowfish. (used by Touhou Unreal Mahjong 3rd Generation)
 - `-l` will attempt to decompress files in the packfile using `LLZSS.exe`. (used in other games
+
 The two switches cannot be combined. Choose one or the other.
 
 Outputs files into `packfile/` (or `packfile-music/` if processing a `.mus` file).
