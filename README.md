@@ -10,7 +10,7 @@ To use `blowpack` or `lunpack -b`, you will need to provide a 448-bit key file n
 
 blowpack
 --------
-Encrypts a file using a non-chaining Blowfish implementation and adds a bogus LZSS header. The bogus header is used by thmj3g's loader to determine the length of the original unpadded file.
+Encrypts a file using a non-chaining Blowfish implementation and adds a bogus LZSS header. The bogus header is used by thmj3g's loader to determine the length of the original unpadded file. ...yes, really. It's not compressed at all.
 
 ### Usage
 `blowpack filename`
@@ -18,7 +18,8 @@ Encrypts a file using a non-chaining Blowfish implementation and adds a bogus LZ
 The file is overwritten, so be careful!
 
 ### TODO
-- Add a decode/header-stripping mode
+- Check for existing header, don't encrypt again if the header exists (decode/strip header instead)
+- Add a decrypt/header-stripping mode
 - Allow keyfile to be specified as an argument
 
 
