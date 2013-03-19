@@ -4,6 +4,8 @@ Tools to unpack and repack data files for [Touhou Unreal Mahjong 3rd Generation]
 
 This game uses the [AIMS 2D game engine](http://aims.dna-softwares.com/?page_id=14 "(Japanese)"), which in turn makes heavy use of the (now defunct) D3D library [Luna](http://web.archive.org/web/20060425214438/http://luna.sumomo.ne.jp/ "(Japanese)"). A few of the utilities included in both the AIMS SDK as well as the `bin/` directory of this repository come from the Luna library, specifically `LLZSS.exe` and `LPACK.exe`.
 
+The `.lua` files contained within the packfiles of `thmj3g.p` (and likely those of certain other games) are precompiled, so a disassembler (and an understanding of LASM) will be necessary to modify them. [Lua Assembly Tools](https://github.com/mlnlover11/LuaAssemblyTools) is recommended for disassembling and recompiling these files.
+
 To use `blowpack` or `lunpack -b`, you will need to provide a 448-bit key file named `thmj3g.key`. The file should be 56 bytes long and contain a binary representation of the key.
 
 blowpack
