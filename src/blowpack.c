@@ -55,6 +55,7 @@ void prepare_cipher() {
     keyfile = fopen("thmj3g.key", "rb"); // TODO: refactor out into commandline arg
     if(keyfile == NULL) {
         perror("  - KEYFILE ERROR: ");
+        exit(EXIT_FAILURE);
     }
     fseek(keyfile, 0, SEEK_END);
     keysize = ftell(keyfile);

@@ -269,7 +269,8 @@ int main(int argc, char *argv[]) {
             FILE *keyfile;
             keyfile = fopen("thmj3g.key", "rb"); // TODO: refactor out into commandline arg
             if(keyfile == NULL) {
-                perror("  - ERROR: ");
+                perror("  - KEYFILE ERROR: ");
+                exit(EXIT_FAILURE);
             }
             fread(blowfish_key, sizeof(unsigned char), 56, keyfile);
             fclose(keyfile);
