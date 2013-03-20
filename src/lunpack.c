@@ -36,8 +36,8 @@ char *buff; // buffer used for reading file data from the packfile
 char using_decompressor = 0; // defaults to 0/false, set to 1/true in order to
                              // decompress each file using LLZSS.exe if available.
                              // This uses system(), so it carries a performance penalty.
-char using_blowfish = 0;	 // defaults to 0/false, set to 1/true in order to
-							 // decrypt files using Blowfish.
+char using_blowfish = 0;     // defaults to 0/false, set to 1/true in order to
+                             // decrypt files using Blowfish.
 
 BLOWFISH_CTX cipher;
 unsigned char blowfish_key[56];
@@ -110,16 +110,16 @@ void check_handle() {
 /* Checks to make sure the magic bytes of the packfile match "PACK".
  */
 void check_magic() {
-	check_handle();
-	
+    check_handle();
+    
     packheader head;
 
-	rewind(packfile);
+    rewind(packfile);
     fread(&head, sizeof(head), 1, packfile);
-	if(head.magic != expected_magic) {
-		printf("ERROR: packfile magic bytes do not match 'PACK'\n");
-		exit(EXIT_FAILURE);
-	}
+    if(head.magic != expected_magic) {
+        printf("ERROR: packfile magic bytes do not match 'PACK'\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 /* Returns size of packfile in bytes.
@@ -128,7 +128,7 @@ size_t get_filesize() {
     check_handle();
 
     fseek(packfile, 0, SEEK_END);
-	return ftell(packfile);
+    return ftell(packfile);
 }
 
 /* Returns the number of files inside the packfile. Uses the value at 0x04.
@@ -162,11 +162,11 @@ int unpack_file() {
         packitem p;
         fread(&p, sizeof(p), 1, packfile);
         files[i] = p;
-		
-		if(using_blowfish != 0) { // LZSS header in encrypted packfile is worthless, toss it out
-			files[i].start += 0x08;
-			files[i].length -= 0x08;
-		}
+        
+        if(using_blowfish != 0) { // LZSS header in encrypted packfile is worthless, toss it out
+            files[i].start += 0x08;
+            files[i].length -= 0x08;
+        }
     }
     
     // write out each file
@@ -179,20 +179,20 @@ int unpack_file() {
         if(result != files[i].length) {
             printf("  - WARNING: Expected %d bytes, only read %d bytes.\n", files[i].length, result);
         }
-		
-		if(using_blowfish != 0) { // decrypt if necessary
-			int half_block = sizeof(unsigned long);
-			int j;
-			unsigned long L, R;
-			for(j=0; j<result; j+=(2*half_block)) {
-				memcpy(&L, &buff[j], half_block);
-				memcpy(&R, &buff[j+half_block], half_block);
-				Blowfish_Decrypt(&cipher, &L, &R);
-				memcpy(&buff[j], &L, half_block);
-				memcpy(&buff[j+half_block], &R, half_block);
-			}
-		}
-		
+        
+        if(using_blowfish != 0) { // decrypt if necessary
+            int half_block = sizeof(unsigned long);
+            int j;
+            unsigned long L, R;
+            for(j=0; j<result; j+=(2*half_block)) {
+                memcpy(&L, &buff[j], half_block);
+                memcpy(&R, &buff[j+half_block], half_block);
+                Blowfish_Decrypt(&cipher, &L, &R);
+                memcpy(&buff[j], &L, half_block);
+                memcpy(&buff[j+half_block], &R, half_block);
+            }
+        }
+        
         substitute_chars(files[i].name, '\\', '/'); // packfile uses \ for its path separator, change to /
         char outputname[MAX_PATH + 1];
         strncpy(outputname, outputfolder, MAX_PATH + 1);
@@ -233,13 +233,13 @@ int main(int argc, char *argv[]) {
     if(argc <= 1) {
         printf("lunpack: Unpacks files made by lpack. \n");
         printf("Usage: lunpack packfile.p [-b][-l] \n\n");
-		printf("-b: Decrypt packfile contents using built-in Blowfish key. Do not use \n");
-		printf("    with -l, as encrypted packfiles are not compressed. (the LZSS header \n");
-		printf("    is just there for show). Looks in thmj3g.key for key content.\n");
+        printf("-b: Decrypt packfile contents using built-in Blowfish key. Do not use \n");
+        printf("    with -l, as encrypted packfiles are not compressed. (the LZSS header \n");
+        printf("    is just there for show). Looks in thmj3g.key for key content.\n");
         printf("-l: Decompress files using LLZSS.exe if available. Uses system(), which \n");
         printf("    slows the process down. Do not use this switch with .mus files, since \n");
         printf("    the data in them is already decompressed. Do not use this switch with \n");
-		printf("    -b.\n");
+        printf("    -b.\n");
         return EXIT_FAILURE;
     }
     
@@ -247,9 +247,9 @@ int main(int argc, char *argv[]) {
         printf("ERROR: %s could not be read or does not exist.\n", packname);
         return EXIT_FAILURE;
     }
-	
-	get_itemcount();
-	check_magic();
+    
+    get_itemcount();
+    check_magic();
     
     strcpy(outputfolder, packname);
     strtok(outputfolder, "."); // split off before first .
@@ -259,25 +259,25 @@ int main(int argc, char *argv[]) {
     }
     
     if(argc >= 3) { // processing mode switch given
-		if((strcmp(argv[2], "-l") == 0)) { // -l option specified, turn on decompression
-			printf("-l switch given, decompressing files with LLZSS.exe.\n");
-			using_decompressor = 1;
-		} else if((strcmp(argv[2], "-b")) == 0) { // -b option specified, initialize Blowfish
-			printf("-b switch given, decrypting files.\n");
-			using_blowfish = 1;
-			
-			FILE *keyfile;
-			keyfile = fopen("thmj3g.key", "rb"); // TODO: refactor out into commandline arg
-	        if(keyfile == NULL) {
-				perror("  - ERROR: ");
-			}
-			fread(blowfish_key, sizeof(unsigned char), 56, keyfile);
-			fclose(keyfile);
-			
-			Blowfish_Init(&cipher, blowfish_key, 56);
-		} else { // invalid switch
-			printf("Invalid processing mode, ignoring.\n");
-		}
+        if((strcmp(argv[2], "-l") == 0)) { // -l option specified, turn on decompression
+            printf("-l switch given, decompressing files with LLZSS.exe.\n");
+            using_decompressor = 1;
+        } else if((strcmp(argv[2], "-b")) == 0) { // -b option specified, initialize Blowfish
+            printf("-b switch given, decrypting files.\n");
+            using_blowfish = 1;
+            
+            FILE *keyfile;
+            keyfile = fopen("thmj3g.key", "rb"); // TODO: refactor out into commandline arg
+            if(keyfile == NULL) {
+                perror("  - ERROR: ");
+            }
+            fread(blowfish_key, sizeof(unsigned char), 56, keyfile);
+            fclose(keyfile);
+            
+            Blowfish_Init(&cipher, blowfish_key, 56);
+        } else { // invalid switch
+            printf("Invalid processing mode, ignoring.\n");
+        }
     }
     if(using_decompressor != 0 && access("LLZSS.exe", F_OK) == -1) {
         printf("LLZSS.exe missing, disabling decompression.\n");
